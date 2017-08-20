@@ -51,14 +51,14 @@ func (v *Validator) Validate(model interface{}) error {
 	}
 
 	if val.Kind() != reflect.Struct {
-		panic("not struct")
+		return nil
 	}
 
 	info := v.getModelInfo(val.Type())
 
-	for i, pi := range info {
-		fmt.Printf("%d min=%v max=%v pattern=%s transformer=%s optional=%v\n", i, pi.minVal, pi.maxVal, pi.patternName, pi.transformName, pi.optional)
-	}
+	//for i, pi := range info {
+	//	fmt.Printf("%d min=%v max=%v pattern=%s transformer=%s optional=%v\n", i, pi.minVal, pi.maxVal, pi.patternName, pi.transformName, pi.optional)
+	//}
 
 	for i := 0; i < val.NumField(); i++ {
 		fv := val.Field(i)
@@ -78,6 +78,43 @@ func (v *Validator) Validate(model interface{}) error {
 
 		if fv.Interface() == reflect.Zero(fv.Type()).Interface() && pi.optional {
 			continue
+		}
+
+		for fv.Kind() == reflect.Ptr && !fv.IsNil() {
+			fv = fv.Elem()
+		}
+
+		if fv.Kind() == reflect.Ptr {
+			if pi.optional {
+				continue
+			}
+
+			return &Error{
+				ParamName: pi.name,
+				Message:   fmt.Sprintf("no value"),
+			}
+
+		}
+
+		switch fv.Kind() {
+		case reflect.Slice:
+			for i := 0; i < fv.Len(); i++ {
+				err := v.Validate(fv.Index(i).Interface())
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		case reflect.Map:
+			for _, k := range fv.MapKeys() {
+				err := v.Validate(fv.MapIndex(k).Interface())
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		case reflect.Struct:
+			return v.Validate(fv.Interface())
 		}
 
 		if pi.minVal != nil {
@@ -161,7 +198,7 @@ func (v *Validator) Validate(model interface{}) error {
 					}
 				}
 			} else {
-				panic("invalid pattern: " + pi.patternName)
+				panic(fmt.Sprintf("pattern: %s not found", pi.patternName))
 			}
 		}
 	}
