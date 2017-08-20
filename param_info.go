@@ -2,7 +2,6 @@ package goparam
 
 import (
 	"errors"
-	"fmt"
 	"github.com/natande/gox"
 	"reflect"
 	"strings"
@@ -41,7 +40,7 @@ func parseModelInfo(typ reflect.Type, tagName string) (modelInfo, error) {
 			continue
 		}
 
-		fmt.Println(i, pi, err)
+		//fmt.Println(i, pi, err)
 		indexToParamInfo[i] = pi
 	}
 

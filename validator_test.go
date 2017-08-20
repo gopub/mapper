@@ -12,8 +12,9 @@ type Image struct {
 }
 
 type Topic struct {
-	Title string `param:"min=2,max=30"`
-	Image *Image `param:"optional"`
+	Title      string   `param:"min=2,max=30"`
+	CoverImage *Image   `param:"optional"`
+	MoreImages []*Image `param:"optional"`
 }
 
 func TestValidate(t *testing.T) {
@@ -43,17 +44,17 @@ func TestValidate(t *testing.T) {
 		t.FailNow()
 	}
 
-	topic.Image = &Image{
-		Width:100,
-		Height:0,
-		Link:"https://www.image.com",
+	topic.CoverImage = &Image{
+		Width:  100,
+		Height: 0,
+		Link:   "https://www.image.com",
 	}
 	err = Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
 
-	topic.Image = &Image{
+	topic.CoverImage = &Image{
 		Width:  100,
 		Height: 900,
 		Link:   "https://www.image.com",
@@ -63,11 +64,41 @@ func TestValidate(t *testing.T) {
 		t.FailNow()
 	}
 
-	topic.Image = &Image{
+	topic.CoverImage = &Image{
 		Width:  100,
 		Height: 800,
 		Link:   "https://www.image.com",
 	}
+	err = Validate(topic)
+	if err != nil {
+		t.FailNow()
+	}
+
+	topic.MoreImages = []*Image{{
+		Width:  0,
+		Height: 800,
+		Link:   "https://www.image.com",
+	}}
+	err = Validate(topic)
+	if err == nil {
+		t.FailNow()
+	}
+
+	topic.MoreImages = []*Image{{
+		Width:  100,
+		Height: 800,
+		Link:   ":",
+	}}
+	err = Validate(topic)
+	if err == nil {
+		t.FailNow()
+	}
+
+	topic.MoreImages = []*Image{{
+		Width:  100,
+		Height: 800,
+		Link:   "https://www.image.com",
+	}}
 	err = Validate(topic)
 	if err != nil {
 		t.FailNow()

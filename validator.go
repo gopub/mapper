@@ -76,10 +76,6 @@ func (v *Validator) Validate(model interface{}) error {
 			continue
 		}
 
-		if fv.Interface() == reflect.Zero(fv.Type()).Interface() && pi.optional {
-			continue
-		}
-
 		for fv.Kind() == reflect.Ptr && !fv.IsNil() {
 			fv = fv.Elem()
 		}
@@ -98,23 +94,53 @@ func (v *Validator) Validate(model interface{}) error {
 
 		switch fv.Kind() {
 		case reflect.Slice:
+			if fv.Len() == 0 {
+				if pi.optional {
+					continue
+				}
+
+				return &Error{
+					ParamName: pi.name,
+					Message:   fmt.Sprintf("no value"),
+				}
+			}
+
 			for i := 0; i < fv.Len(); i++ {
 				err := v.Validate(fv.Index(i).Interface())
 				if err != nil {
 					return err
 				}
 			}
-			return nil
+			continue
 		case reflect.Map:
+			if fv.Len() == 0 {
+				if pi.optional {
+					continue
+				} else {
+					return &Error{
+						ParamName: pi.name,
+						Message:   fmt.Sprintf("no value"),
+					}
+				}
+			}
+
 			for _, k := range fv.MapKeys() {
 				err := v.Validate(fv.MapIndex(k).Interface())
 				if err != nil {
 					return err
 				}
 			}
-			return nil
+			continue
 		case reflect.Struct:
-			return v.Validate(fv.Interface())
+			err := v.Validate(fv.Interface())
+			if err != nil {
+				return err
+			}
+			continue
+		}
+
+		if fv.Interface() == reflect.Zero(fv.Type()).Interface() && pi.optional {
+			continue
 		}
 
 		if pi.minVal != nil {
