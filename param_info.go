@@ -2,10 +2,10 @@ package goparam
 
 import (
 	"errors"
+	"fmt"
 	"github.com/natande/gox"
 	"reflect"
 	"strings"
-	"fmt"
 )
 
 type modelInfo = map[int]*paramInfo

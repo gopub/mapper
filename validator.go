@@ -15,7 +15,7 @@ type Validator struct {
 
 func NewValidator(tagName string) *Validator {
 	v := &Validator{
-		tagName:tagName,
+		tagName: tagName,
 	}
 	v.patternToMatcher = make(map[string]PatternMatcher, len(_patternToMatcher))
 	for t, r := range _patternToMatcher {
@@ -73,6 +73,10 @@ func (v *Validator) Validate(model interface{}) error {
 
 		pi, ok := info[i]
 		if !ok {
+			continue
+		}
+
+		if fv.Interface() == reflect.Zero(fv.Type()).Interface() && pi.optional {
 			continue
 		}
 
@@ -150,17 +154,10 @@ func (v *Validator) Validate(model interface{}) error {
 
 		if len(pi.patternName) > 0 {
 			if matcher, ok := v.patternToMatcher[pi.patternName]; ok {
-				if fv.Interface() != reflect.Zero(fv.Type()).Interface() {
-					if !matcher.Match(fv.Interface()) {
-						return &Error{
-							ParamName: pi.name,
-							Message:   fmt.Sprintf("not match pattern: %s", pi.patternName),
-						}
-					}
-				} else if !pi.optional {
+				if !matcher.Match(fv.Interface()) {
 					return &Error{
 						ParamName: pi.name,
-						Message:   fmt.Sprintf("no value"),
+						Message:   fmt.Sprintf("not match pattern: %s", pi.patternName),
 					}
 				}
 			} else {

@@ -33,7 +33,7 @@ func AssignWithValidator(params map[string]interface{}, model interface{}, valid
 	}
 
 	//v must be a nil pointer or a valid value
-	err := assignValue(v,reflect.ValueOf(params), validator)
+	err := assignValue(v, reflect.ValueOf(params), validator)
 	if err != nil {
 		return err
 	}
