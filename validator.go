@@ -86,21 +86,21 @@ func (v *Validator) Validate(model interface{}) error {
 				if fv.Float() < pi.minVal.(float64) {
 					return &Error{
 						ParamName: pi.name,
-						Message:   fmt.Sprintf("larger than %v", pi.minVal),
+						Message:   fmt.Sprintf("must be larger than %v", pi.minVal),
 					}
 				}
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 				if fv.Int() < pi.minVal.(int64) {
 					return &Error{
 						ParamName: pi.name,
-						Message:   fmt.Sprintf("larger than %v", pi.minVal),
+						Message:   fmt.Sprintf("must be larger than %v", pi.minVal),
 					}
 				}
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 				if fv.Uint() < pi.minVal.(uint64) {
 					return &Error{
 						ParamName: pi.name,
-						Message:   fmt.Sprintf("larger than %v", pi.minVal),
+						Message:   fmt.Sprintf("must be larger than %v", pi.minVal),
 					}
 				}
 			case reflect.String:
@@ -108,7 +108,7 @@ func (v *Validator) Validate(model interface{}) error {
 				if len(fv.String()) < int(i) {
 					return &Error{
 						ParamName: pi.name,
-						Message:   fmt.Sprintf("longer than %v", pi.minVal),
+						Message:   fmt.Sprintf("must be longer than %v", pi.minVal),
 					}
 				}
 			default:
@@ -122,21 +122,21 @@ func (v *Validator) Validate(model interface{}) error {
 				if fv.Float() > pi.maxVal.(float64) {
 					return &Error{
 						ParamName: pi.name,
-						Message:   fmt.Sprintf("less than %v", pi.maxVal),
+						Message:   fmt.Sprintf("must be less than %v", pi.maxVal),
 					}
 				}
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 				if fv.Int() > pi.maxVal.(int64) {
 					return &Error{
 						ParamName: pi.name,
-						Message:   fmt.Sprintf("less than %v", pi.maxVal),
+						Message:   fmt.Sprintf("must be less than %v", pi.maxVal),
 					}
 				}
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 				if fv.Uint() > pi.maxVal.(uint64) {
 					return &Error{
 						ParamName: pi.name,
-						Message:   fmt.Sprintf("less than %v", pi.maxVal),
+						Message:   fmt.Sprintf("must be less than %v", pi.maxVal),
 					}
 				}
 			case reflect.String:
@@ -144,7 +144,7 @@ func (v *Validator) Validate(model interface{}) error {
 				if len(fv.String()) > int(i) {
 					return &Error{
 						ParamName: pi.name,
-						Message:   fmt.Sprintf("shorter than %v", pi.maxVal),
+						Message:   fmt.Sprintf("must be shorter than %v", pi.maxVal),
 					}
 				}
 			default:
