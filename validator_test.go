@@ -6,8 +6,8 @@ import (
 )
 
 type Image struct {
-	Width  int    `param:"min=100,max=800"`
-	Height int    `param:"min=100,max=800"`
+	Width  int    `param:"w,min=100,max=800"`
+	Height int    `param:"h,min=100,max=800"`
 	Link   string `param:"pattern=url"`
 }
 
