@@ -57,7 +57,7 @@ func (v *Validator) Validate(model interface{}) error {
 	info := v.getModelInfo(val.Type())
 
 	//for i, pi := range info {
-	//	fmt.Printf("%d min=%v max=%v pattern=%s transformer=%s optional=%v\n", i, pi.minVal, pi.maxVal, pi.patternName, pi.transformName, pi.optional)
+	//	fmt.Printf("%d min=%v max=%v pattern=%s transformer=%s optional=%v\n", i, pi.minVal, pi.maxVal, pi.patterns, pi.transformName, pi.optional)
 	//}
 
 	for i := 0; i < val.NumField(); i++ {
@@ -215,16 +215,16 @@ func (v *Validator) Validate(model interface{}) error {
 			}
 		}
 
-		if len(pi.patternName) > 0 {
-			if matcher, ok := v.patternToMatcher[pi.patternName]; ok {
+		for _, pattern := range pi.patterns {
+			if matcher, ok := v.patternToMatcher[pattern]; ok {
 				if !matcher.Match(fv.Interface()) {
 					return &Error{
 						ParamName: pi.name,
-						Message:   fmt.Sprintf("not match pattern: %s", pi.patternName),
+						Message:   fmt.Sprintf("not match pattern: %s", pi.patterns),
 					}
 				}
 			} else {
-				panic(fmt.Sprintf("pattern: %s not found", pi.patternName))
+				panic(fmt.Sprintf("pattern: %s not found", pi.patterns))
 			}
 		}
 	}

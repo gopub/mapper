@@ -11,7 +11,7 @@ type modelInfo = map[int]*paramInfo
 
 type paramInfo struct {
 	name          string
-	patternName   string
+	patterns      []string
 	transformName string
 	minVal        interface{}
 	maxVal        interface{}
@@ -110,11 +110,7 @@ func parseParamInfo(f reflect.StructField, tagName string) (*paramInfo, error) {
 				return nil, errors.New("invalid pattern name: " + val)
 			}
 
-			if len(info.patternName) > 0 {
-				return nil, errors.New("duplicate pattern: " + val)
-			}
-
-			info.patternName = val
+			info.patterns = append(info.patterns, val)
 		case "transformer":
 			if !MatchPattern("variable", val) {
 				return nil, errors.New("invalid transformer name: " + val)

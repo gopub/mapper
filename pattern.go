@@ -32,8 +32,8 @@ var _patternToMatcher = map[string]PatternMatcher{
 	"mobile":    (*Regexp)(regexp.MustCompile(RegexpMobile_ZHCN)),
 	"email":     (*Regexp)(regexp.MustCompile(RegexpEmail)),
 	"variable":  (*Regexp)(regexp.MustCompile(RegexpVariable)),
-	"birthdate": PatternMatchFunc(IsBirthDate),
-	"url":       PatternMatchFunc(IsLink),
+	"birthdate": PatternMatchFunc(MatchBirthDate),
+	"url":       PatternMatchFunc(MatchURL),
 }
 
 const (
@@ -43,11 +43,20 @@ const (
 	RegexpVariable    = "^[_a-zA-Z][_a-zA-Z0-9]*$"
 )
 
+const (
+	PatternVersion   = "version"
+	PatternURL       = "url"
+	PatternEmail     = "email"
+	PatternVariable  = "variable"
+	PatternMobile    = "mobile"
+	PatternBirthDate = "birthdate"
+)
+
 func MatchPattern(name string, v interface{}) bool {
 	return _patternToMatcher[name].Match(v)
 }
 
-func IsBirthDate(i interface{}) bool {
+func MatchBirthDate(i interface{}) bool {
 	s, ok := i.(string)
 	if !ok {
 		return false
@@ -65,14 +74,19 @@ func IsBirthDate(i interface{}) bool {
 	return true
 }
 
-func IsLink(i interface{}) bool {
+func MatchURL(i interface{}) bool {
 	s, ok := i.(string)
 	if !ok {
 		return false
 	}
 
-	if _, err := url.Parse(s); err != nil {
+	if u, err := url.Parse(s); err != nil {
+		return false
+	} else if len(u.Scheme) == 0 {
+		return false
+	} else if len(u.Host) == 0 {
 		return false
 	}
+
 	return true
 }
