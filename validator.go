@@ -1,33 +1,44 @@
 package goparam
 
-import "regexp"
-
 type Validator struct {
-	tagName      string
-	nameToRegexp map[string]*regexp.Regexp
+	tagName           string
+	patternToMatcher  map[string]PatternMatcher
+	nameToTransformer map[string]Transformer
 }
 
 func NewValidator(tagName string) *Validator {
 	v := &Validator{}
-	v.nameToRegexp = make(map[string]*regexp.Regexp, len(_nameToRegexp))
-	for t, r := range _nameToRegexp {
-		v.nameToRegexp[t] = r
+	v.patternToMatcher = make(map[string]PatternMatcher, len(_patternToMatcher))
+	for t, r := range _patternToMatcher {
+		v.patternToMatcher[t] = r
+	}
+	v.nameToTransformer = make(map[string]Transformer, len(_nameToTransformer))
+	for n, t := range _nameToTransformer {
+		v.nameToTransformer[n] = t
 	}
 	return v
 }
 
-func (v *Validator) RegisterPattern(name, pattern string) error {
+func (v *Validator) RegisterPatternMatcher(name string, matcher PatternMatcher) error {
 	return nil
 }
 
-func (v *Validator) Validate() error {
+func (v *Validator) RegisterPatternMatchFunc(name string, matchFunc PatternMatchFunc) error {
+	return nil
+}
+
+func (v *Validator) Validate(model interface{}) error {
 	return nil
 }
 
 var _defaultValidator = NewValidator("param")
 
-func RegisterPattern(name, pattern string) error {
-	return _defaultValidator.RegisterPattern(name, pattern)
+func RegisterPatternMatcher(name string, matcher PatternMatcher) error {
+	return _defaultValidator.RegisterPatternMatcher(name, matcher)
+}
+
+func RegisterPatternMatchFunc(name string, matchFunc PatternMatchFunc) error {
+	return _defaultValidator.RegisterPatternMatchFunc(name, matchFunc)
 }
 
 func Validate(model interface{}) error {
