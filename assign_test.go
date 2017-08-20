@@ -20,7 +20,7 @@ func TestAssign(t *testing.T) {
 	}
 
 	var topic *Topic
-	err := Assign(params, &topic)
+	err := Assign(&topic, params)
 	if err != nil {
 		t.FailNow()
 	}

@@ -42,5 +42,5 @@ type Topic struct {
 	}
 
 	var topic *Topic
-	err := goparam.Assign(params, &topic)
+	err := goparam.Assign(&topic, params)
 	//...
