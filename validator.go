@@ -3,6 +3,7 @@ package goparam
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 	"sync"
 )
 
@@ -28,16 +29,16 @@ func NewValidator(tagName string) *Validator {
 	return v
 }
 
-func (v *Validator) RegisterPatternMatcher(name string, matcher PatternMatcher) error {
-	return nil
+func (v *Validator) RegisterPatternMatcher(name string, matcher PatternMatcher) {
+	v.patternToMatcher[name] = matcher
 }
 
-func (v *Validator) RegisterPatternMatchFunc(name string, matchFunc PatternMatchFunc) error {
-	return nil
+func (v *Validator) RegisterPatternMatchFunc(name string, matchFunc PatternMatchFunc) {
+	v.patternToMatcher[name] = matchFunc
 }
 
-func (v *Validator) RegisterRegexpPattern(name string, regularExpression string) error {
-	return nil
+func (v *Validator) RegisterRegexp(name string, regexpString string) {
+	v.patternToMatcher[name] = (*Regexp)(regexp.MustCompile(regexpString))
 }
 
 func (v *Validator) Validate(model interface{}) error {
@@ -246,12 +247,16 @@ func (v *Validator) getModelInfo(modelType reflect.Type) modelInfo {
 
 var _defaultValidator = NewValidator("param")
 
-func RegisterPatternMatcher(name string, matcher PatternMatcher) error {
-	return _defaultValidator.RegisterPatternMatcher(name, matcher)
+func RegisterPatternMatcher(name string, matcher PatternMatcher) {
+	_defaultValidator.RegisterPatternMatcher(name, matcher)
 }
 
-func RegisterPatternMatchFunc(name string, matchFunc PatternMatchFunc) error {
-	return _defaultValidator.RegisterPatternMatchFunc(name, matchFunc)
+func RegisterPatternMatchFunc(name string, matchFunc PatternMatchFunc) {
+	_defaultValidator.RegisterPatternMatchFunc(name, matchFunc)
+}
+
+func RegisterRegexp(name string, regexpString string) {
+	_defaultValidator.RegisterRegexp(name, regexpString)
 }
 
 func Validate(model interface{}) error {
