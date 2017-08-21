@@ -24,6 +24,7 @@ type Topic struct {
     //...
     
 ## Assign
+Assign will validate result automatically
 
     params := map[string]interface{}{
 		"title": "this is title",
