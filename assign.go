@@ -8,11 +8,11 @@ import (
 )
 
 // Assign assigns params to model with DefaultValidator
-func Assign(model interface{}, params map[string]interface{}) error {
+func Assign(model interface{}, params interface{}) error {
 	return AssignWithValidator(model, params, _defaultValidator)
 }
 
-func AssignWithTag(model interface{}, params map[string]interface{}, tagName string) error {
+func AssignWithTag(model interface{}, params interface{}, tagName string) error {
 	var v *Validator
 	if tagName == _defaultValidator.tagName {
 		v = _defaultValidator
@@ -22,7 +22,7 @@ func AssignWithTag(model interface{}, params map[string]interface{}, tagName str
 	return AssignWithValidator(model, params, v)
 }
 
-func AssignWithValidator(model interface{}, params map[string]interface{}, validator *Validator) error {
+func AssignWithValidator(model interface{}, params interface{}, validator *Validator) error {
 	v := reflect.ValueOf(model)
 	if v.IsValid() == false {
 		panic("not valid")
