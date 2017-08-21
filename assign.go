@@ -173,7 +173,6 @@ func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validat
 	}
 
 	if srcVal.Kind() != reflect.Map {
-		panic("" + srcVal.Kind().String())
 		return errors.New("srcVal is not map")
 	}
 
