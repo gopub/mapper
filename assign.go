@@ -1,7 +1,6 @@
 package goparam
 
 import (
-	"errors"
 	"fmt"
 	"github.com/natande/gox"
 	"reflect"
@@ -41,7 +40,7 @@ func AssignWithValidator(model interface{}, params interface{}, validator *Valid
 }
 
 // dstVal is valid value or pointer to value
-func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) error {
+func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) *Error {
 	if !dstVal.IsValid() || !srcVal.IsValid() {
 		panic("invalid values")
 	}
@@ -62,35 +61,35 @@ func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validato
 	case reflect.Bool:
 		b, err := gox.ParseBool(srcVal.Interface())
 		if err != nil {
-			return err
+			return newError("", err.Error())
 		}
 		v.SetBool(b)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		i, err := gox.ParseInt(srcVal.Interface())
 		if err != nil {
-			return err
+			return newError("", err.Error())
 		}
 		v.SetInt(i)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		i, err := gox.ParseInt(srcVal.Interface())
 		if err != nil {
-			return err
+			return newError("", err.Error())
 		}
 		v.SetUint(uint64(i))
 	case reflect.Float32, reflect.Float64:
 		i, err := gox.ParseFloat(srcVal.Interface())
 		if err != nil {
-			return err
+			return newError("", err.Error())
 		}
 		v.SetFloat(i)
 	case reflect.String:
 		if srcVal.Kind() != reflect.String {
-			return errors.New("source value is not string")
+			return newError("", "source value is not string")
 		}
 		v.SetString(srcVal.String())
 	case reflect.Slice:
 		if srcVal.Kind() != reflect.Slice {
-			return errors.New("source value is slice")
+			return newError("", "source value is slice")
 		}
 		v.Set(reflect.MakeSlice(v.Type(), srcVal.Len(), srcVal.Cap()))
 		for i := 0; i < srcVal.Len(); i++ {
@@ -118,17 +117,18 @@ func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validato
 
 // dstVal is map
 // srcVal is map
-func assignMap(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) error {
+func assignMap(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) *Error {
 	if dstVal.Kind() != reflect.Map {
 		panic("not map")
 	}
 
 	if srcVal.Kind() != reflect.Map {
-		return errors.New("srcVal is not map")
+		return newError("", "srcVal is not map")
 	}
 
 	if !srcVal.Type().Key().AssignableTo(dstVal.Type().Key()) {
-		return errors.New(fmt.Sprintf("%s can't be assigned to %s", srcVal.Type().Key().String(), dstVal.Type().Key().String()))
+		msg := fmt.Sprintf("%s can't be assigned to %s", srcVal.Type().Key().String(), dstVal.Type().Key().String())
+		return newError("", msg)
 	}
 
 	if dstVal.IsNil() {
@@ -163,7 +163,7 @@ func assignMap(dstVal reflect.Value, srcVal reflect.Value, validator *Validator)
 
 // dstVal is struct
 // srcVal is map
-func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) error {
+func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) *Error {
 	if dstVal.Kind() != reflect.Struct {
 		panic("not struct")
 	}
@@ -174,13 +174,13 @@ func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validat
 
 	if srcVal.Kind() != reflect.Map {
 		return &Error{
-			Message: "srcVal is not map",
+			msg: "srcVal is not map",
 		}
 	}
 
 	if srcVal.Type().Key().Kind() != reflect.String {
 		return &Error{
-			Message: "key type must be string",
+			msg: "key type must be string",
 		}
 	}
 
@@ -195,13 +195,7 @@ func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validat
 		if ft.Anonymous {
 			err := assignValue(fv, srcVal, validator)
 			if err != nil {
-				if er, ok := err.(*Error); ok {
-					return er
-				}
-
-				return &Error{
-					Message: err.Error(),
-				}
+				return err
 			}
 			continue
 		}
@@ -215,24 +209,17 @@ func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validat
 		if fsv.IsValid() {
 			err := assignValue(fv, reflect.ValueOf(fsv.Interface()), validator)
 			if err != nil {
-				if er, ok := err.(*Error); ok {
-					if len(er.ParamName) > 0 {
-						er.ParamName = pi.name + "." + er.ParamName
-					} else {
-						er.ParamName = pi.name
-					}
-					return er
+				if len(err.paramName) > 0 {
+					err.paramName = pi.name + "." + err.paramName
+				} else {
+					err.paramName = pi.name
 				}
-
-				return &Error{
-					ParamName: pi.name,
-					Message:   err.Error(),
-				}
+				return err
 			}
 		} else if !pi.optional {
 			return &Error{
-				ParamName: pi.name,
-				Message:   "no value",
+				paramName: pi.name,
+				msg:       "no value",
 			}
 		}
 	}
