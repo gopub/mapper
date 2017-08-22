@@ -173,11 +173,15 @@ func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validat
 	}
 
 	if srcVal.Kind() != reflect.Map {
-		return errors.New("srcVal is not map")
+		return &Error{
+			Message: "srcVal is not map",
+		}
 	}
 
 	if srcVal.Type().Key().Kind() != reflect.String {
-		return errors.New("key type must be string")
+		return &Error{
+			Message: "key type must be string",
+		}
 	}
 
 	info := validator.getModelInfo(dstVal.Type())
@@ -191,7 +195,13 @@ func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validat
 		if ft.Anonymous {
 			err := assignValue(fv, srcVal, validator)
 			if err != nil {
-				return err
+				if er, ok := err.(*Error); ok {
+					return er
+				}
+
+				return &Error{
+					Message: err.Error(),
+				}
 			}
 			continue
 		}
@@ -206,13 +216,17 @@ func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validat
 			err := assignValue(fv, reflect.ValueOf(fsv.Interface()), validator)
 			if err != nil {
 				if er, ok := err.(*Error); ok {
-					er.ParamName = pi.name + "." + er.ParamName
-					return er
-				} else {
-					return &Error{
-						ParamName: pi.name,
-						Message:   err.Error(),
+					if len(er.ParamName) > 0 {
+						er.ParamName = pi.name + "." + er.ParamName
+					} else {
+						er.ParamName = pi.name
 					}
+					return er
+				}
+
+				return &Error{
+					ParamName: pi.name,
+					Message:   err.Error(),
 				}
 			}
 		} else if !pi.optional {

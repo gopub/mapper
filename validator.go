@@ -90,7 +90,6 @@ func (v *Validator) Validate(model interface{}) error {
 				ParamName: pi.name,
 				Message:   fmt.Sprintf("no value"),
 			}
-
 		}
 
 		switch fv.Kind() {
