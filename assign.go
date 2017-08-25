@@ -7,11 +7,11 @@ import (
 )
 
 // Assign assigns params to model with DefaultValidator
-func Assign(model interface{}, params interface{}) error {
+func Assign(model interface{}, params interface{}) Error {
 	return AssignWithValidator(model, params, _defaultValidator)
 }
 
-func AssignWithTag(model interface{}, params interface{}, tagName string) error {
+func AssignWithTag(model interface{}, params interface{}, tagName string) Error {
 	var v *Validator
 	if tagName == _defaultValidator.tagName {
 		v = _defaultValidator
@@ -21,7 +21,7 @@ func AssignWithTag(model interface{}, params interface{}, tagName string) error 
 	return AssignWithValidator(model, params, v)
 }
 
-func AssignWithValidator(model interface{}, params interface{}, validator *Validator) error {
+func AssignWithValidator(model interface{}, params interface{}, validator *Validator) Error {
 	v := reflect.ValueOf(model)
 	if v.IsValid() == false {
 		panic("not valid")
@@ -40,7 +40,7 @@ func AssignWithValidator(model interface{}, params interface{}, validator *Valid
 }
 
 // dstVal is valid value or pointer to value
-func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) *Error {
+func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) *paramError {
 	if !dstVal.IsValid() || !srcVal.IsValid() {
 		panic("invalid values")
 	}
@@ -117,7 +117,7 @@ func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validato
 
 // dstVal is map
 // srcVal is map
-func assignMap(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) *Error {
+func assignMap(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) *paramError {
 	if dstVal.Kind() != reflect.Map {
 		panic("not map")
 	}
@@ -163,7 +163,7 @@ func assignMap(dstVal reflect.Value, srcVal reflect.Value, validator *Validator)
 
 // dstVal is struct
 // srcVal is map
-func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) *Error {
+func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) *paramError {
 	if dstVal.Kind() != reflect.Struct {
 		panic("not struct")
 	}
@@ -173,13 +173,13 @@ func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validat
 	}
 
 	if srcVal.Kind() != reflect.Map {
-		return &Error{
+		return &paramError{
 			msg: "srcVal is not map",
 		}
 	}
 
 	if srcVal.Type().Key().Kind() != reflect.String {
-		return &Error{
+		return &paramError{
 			msg: "key type must be string",
 		}
 	}
@@ -217,7 +217,7 @@ func assignStruct(dstVal reflect.Value, srcVal reflect.Value, validator *Validat
 				return err
 			}
 		} else if !pi.optional {
-			return &Error{
+			return &paramError{
 				paramName: pi.name,
 				msg:       "no value",
 			}

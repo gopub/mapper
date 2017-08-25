@@ -41,7 +41,7 @@ func (v *Validator) RegisterRegexp(name string, regexpString string) {
 	v.patternToMatcher[name] = (*Regexp)(regexp.MustCompile(regexpString))
 }
 
-func (v *Validator) Validate(model interface{}) error {
+func (v *Validator) Validate(model interface{}) Error {
 	val := reflect.ValueOf(model)
 	if val.IsValid() == false {
 		panic("not valid")
@@ -86,7 +86,7 @@ func (v *Validator) Validate(model interface{}) error {
 				continue
 			}
 
-			return &Error{
+			return &paramError{
 				paramName: pi.name,
 				msg:       fmt.Sprintf("no value"),
 			}
@@ -99,7 +99,7 @@ func (v *Validator) Validate(model interface{}) error {
 					continue
 				}
 
-				return &Error{
+				return &paramError{
 					paramName: pi.name,
 					msg:       fmt.Sprintf("no value"),
 				}
@@ -117,7 +117,7 @@ func (v *Validator) Validate(model interface{}) error {
 				if pi.optional {
 					continue
 				} else {
-					return &Error{
+					return &paramError{
 						paramName: pi.name,
 						msg:       fmt.Sprintf("no value"),
 					}
@@ -147,21 +147,21 @@ func (v *Validator) Validate(model interface{}) error {
 			switch fv.Kind() {
 			case reflect.Float32, reflect.Float64:
 				if fv.Float() < pi.minVal.(float64) {
-					return &Error{
+					return &paramError{
 						paramName: pi.name,
 						msg:       fmt.Sprintf("must be larger than %v", pi.minVal),
 					}
 				}
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 				if fv.Int() < pi.minVal.(int64) {
-					return &Error{
+					return &paramError{
 						paramName: pi.name,
 						msg:       fmt.Sprintf("must be larger than %v", pi.minVal),
 					}
 				}
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 				if fv.Uint() < pi.minVal.(uint64) {
-					return &Error{
+					return &paramError{
 						paramName: pi.name,
 						msg:       fmt.Sprintf("must be larger than %v", pi.minVal),
 					}
@@ -169,7 +169,7 @@ func (v *Validator) Validate(model interface{}) error {
 			case reflect.String:
 				i := pi.minVal.(int64)
 				if len(fv.String()) < int(i) {
-					return &Error{
+					return &paramError{
 						paramName: pi.name,
 						msg:       fmt.Sprintf("must be longer than %v", pi.minVal),
 					}
@@ -183,21 +183,21 @@ func (v *Validator) Validate(model interface{}) error {
 			switch fv.Kind() {
 			case reflect.Float32, reflect.Float64:
 				if fv.Float() > pi.maxVal.(float64) {
-					return &Error{
+					return &paramError{
 						paramName: pi.name,
 						msg:       fmt.Sprintf("must be less than %v", pi.maxVal),
 					}
 				}
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 				if fv.Int() > pi.maxVal.(int64) {
-					return &Error{
+					return &paramError{
 						paramName: pi.name,
 						msg:       fmt.Sprintf("must be less than %v", pi.maxVal),
 					}
 				}
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 				if fv.Uint() > pi.maxVal.(uint64) {
-					return &Error{
+					return &paramError{
 						paramName: pi.name,
 						msg:       fmt.Sprintf("must be less than %v", pi.maxVal),
 					}
@@ -205,7 +205,7 @@ func (v *Validator) Validate(model interface{}) error {
 			case reflect.String:
 				i := pi.maxVal.(int64)
 				if len(fv.String()) > int(i) {
-					return &Error{
+					return &paramError{
 						paramName: pi.name,
 						msg:       fmt.Sprintf("must be shorter than %v", pi.maxVal),
 					}
@@ -218,7 +218,7 @@ func (v *Validator) Validate(model interface{}) error {
 		for _, pattern := range pi.patterns {
 			if matcher, ok := v.patternToMatcher[pattern]; ok {
 				if !matcher.Match(fv.Interface()) {
-					return &Error{
+					return &paramError{
 						paramName: pi.name,
 						msg:       fmt.Sprintf("not match pattern: %s", pi.patterns),
 					}
@@ -258,6 +258,6 @@ func RegisterRegexp(name string, regexpString string) {
 	_defaultValidator.RegisterRegexp(name, regexpString)
 }
 
-func Validate(model interface{}) error {
+func Validate(model interface{}) Error {
 	return _defaultValidator.Validate(model)
 }

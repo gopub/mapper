@@ -2,27 +2,34 @@ package goparam
 
 import "fmt"
 
-type Error struct {
+type Error interface {
+	error
+	ParamName() string
+	Message() string
+}
+
+type paramError struct {
 	paramName string
 	msg       string
 }
 
-func newError(paramName, msg string) *Error  {
-	return &Error{
-		paramName:paramName,
-		msg:msg,
+var _ Error = (*paramError)(nil)
+
+func newError(paramName, msg string) *paramError {
+	return &paramError{
+		paramName: paramName,
+		msg:       msg,
 	}
 }
 
-func (e *Error) ParamName() string  {
+func (e *paramError) ParamName() string {
 	return e.paramName
 }
 
-func (e *Error) Message() string  {
+func (e *paramError) Message() string {
 	return e.msg
 }
 
-func (e *Error) Error() string {
+func (e *paramError) Error() string {
 	return fmt.Sprintf("param:%s, msg:%s", e.paramName, e.msg)
 }
-
