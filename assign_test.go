@@ -1,6 +1,9 @@
-package goparam
+package param_test
 
-import "testing"
+import (
+	"github.com/natande/goparam"
+	"testing"
+)
 
 func TestAssign(t *testing.T) {
 	params := map[string]interface{}{
@@ -20,7 +23,7 @@ func TestAssign(t *testing.T) {
 	}
 
 	var topic *Topic
-	err := Assign(&topic, params)
+	err := param.Assign(&topic, params)
 	if err != nil {
 		t.FailNow()
 	}
@@ -45,7 +48,7 @@ func TestAssignSlice(t *testing.T) {
 
 	values := []interface{}{params}
 	var topics []*Topic
-	err := Assign(&topics, values)
+	err := param.Assign(&topics, values)
 	if err != nil || len(topics) == 0 {
 		t.FailNow()
 	}

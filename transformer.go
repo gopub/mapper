@@ -1,4 +1,4 @@
-package goparam
+package param
 
 type Transformer interface {
 	Transform(v interface{}) (result interface{}, err error)

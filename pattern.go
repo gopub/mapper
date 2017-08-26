@@ -1,4 +1,4 @@
-package goparam
+package param
 
 import (
 	"net/url"

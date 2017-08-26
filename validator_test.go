@@ -1,6 +1,7 @@
-package goparam
+package param_test
 
 import (
+	"github.com/natande/goparam"
 	"strings"
 	"testing"
 )
@@ -21,25 +22,25 @@ func TestValidate(t *testing.T) {
 	topic := &Topic{
 		Title: "a",
 	}
-	err := Validate(topic)
+	err := param.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
 
 	topic.Title = strings.Repeat("a", 31)
-	err = Validate(topic)
+	err = param.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
 
 	topic.Title = strings.Repeat("a", 30)
-	err = Validate(topic)
+	err = param.Validate(topic)
 	if err != nil {
 		t.FailNow()
 	}
 
 	topic.Title = strings.Repeat("a", 2)
-	err = Validate(topic)
+	err = param.Validate(topic)
 	if err != nil {
 		t.FailNow()
 	}
@@ -49,7 +50,7 @@ func TestValidate(t *testing.T) {
 		Height: 0,
 		Link:   "https://www.image.com",
 	}
-	err = Validate(topic)
+	err = param.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
@@ -59,7 +60,7 @@ func TestValidate(t *testing.T) {
 		Height: 900,
 		Link:   "https://www.image.com",
 	}
-	err = Validate(topic)
+	err = param.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
@@ -69,7 +70,7 @@ func TestValidate(t *testing.T) {
 		Height: 800,
 		Link:   "https://www.image.com",
 	}
-	err = Validate(topic)
+	err = param.Validate(topic)
 	if err != nil {
 		t.FailNow()
 	}
@@ -79,7 +80,7 @@ func TestValidate(t *testing.T) {
 		Height: 800,
 		Link:   "https://www.image.com",
 	}}
-	err = Validate(topic)
+	err = param.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
@@ -89,7 +90,7 @@ func TestValidate(t *testing.T) {
 		Height: 800,
 		Link:   ":",
 	}}
-	err = Validate(topic)
+	err = param.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
@@ -99,7 +100,7 @@ func TestValidate(t *testing.T) {
 		Height: 800,
 		Link:   "https://www.image.com",
 	}}
-	err = Validate(topic)
+	err = param.Validate(topic)
 	if err != nil {
 		t.FailNow()
 	}

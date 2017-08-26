@@ -1,4 +1,4 @@
-# goparam
+# params
 
 Assign parameters to model and validate values
 
@@ -20,7 +20,7 @@ type Topic struct {
     topic := &Topic{
     	Title: "a",
     }
-    err := goparam.Validate(topic)
+    err := params.Validate(topic)
     //...
     
 ## Assign
@@ -43,5 +43,5 @@ Assign will validate result automatically
 	}
 
 	var topic *Topic
-	err := goparam.Assign(&topic, params)
+	err := params.Assign(&topic, params)
 	//...
