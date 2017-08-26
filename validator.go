@@ -139,6 +139,7 @@ func (v *Validator) Validate(model interface{}) Error {
 			continue
 		}
 
+		//slice, map, struct don't support '=='
 		if fv.Interface() == reflect.Zero(fv.Type()).Interface() && pi.optional {
 			continue
 		}
