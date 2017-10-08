@@ -18,7 +18,7 @@ const (
 	PatternURL       = "url"
 	PatternEmail     = "email"
 	PatternVariable  = "variable"
-	PatternMobile    = "mobile"
+	PatternPhone     = "phone"
 	PatternBirthDate = "birth_date"
 )
 
@@ -45,7 +45,7 @@ func (r *Regexp) Match(i interface{}) bool {
 
 var _patternToMatcher = map[string]PatternMatcher{
 	PatternVersion:   (*Regexp)(regexp.MustCompile(RegexpVersion)),
-	PatternMobile:    (*Regexp)(regexp.MustCompile(RegexpMobile_ZHCN)),
+	PatternPhone:     (*Regexp)(regexp.MustCompile(RegexpMobile_ZHCN)),
 	PatternEmail:     (*Regexp)(regexp.MustCompile(RegexpEmail)),
 	PatternVariable:  (*Regexp)(regexp.MustCompile(RegexpVariable)),
 	PatternBirthDate: PatternMatchFunc(MatchBirthDate),
