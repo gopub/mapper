@@ -41,7 +41,12 @@ func AssignWithValidator(model interface{}, params interface{}, validator *Valid
 
 // dstVal is valid value or pointer to value
 func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validator) *paramError {
-	if !dstVal.IsValid() || !srcVal.IsValid() {
+	if !srcVal.IsValid() {
+		return newError("", "no source value")
+	}
+
+	if !dstVal.IsValid() {
+		gox.LogError(dstVal, srcVal)
 		panic("invalid values")
 	}
 
