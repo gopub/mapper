@@ -1,4 +1,4 @@
-package param
+package mapper
 
 type Transformer interface {
 	Transform(v interface{}) (result interface{}, err error)

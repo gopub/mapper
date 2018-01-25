@@ -1,4 +1,4 @@
-package param_test
+package mapper_test
 
 import (
 	"github.com/natande/goparam"
