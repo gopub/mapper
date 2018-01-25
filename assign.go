@@ -2,7 +2,8 @@ package param
 
 import (
 	"fmt"
-	"github.com/natande/gox"
+	"github.com/gopub/types"
+	"log"
 	"reflect"
 )
 
@@ -46,7 +47,7 @@ func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validato
 	}
 
 	if !dstVal.IsValid() {
-		gox.LogError(dstVal, srcVal)
+		log.Println(dstVal, srcVal)
 		panic("invalid values")
 	}
 
@@ -64,25 +65,25 @@ func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validato
 
 	switch v.Kind() {
 	case reflect.Bool:
-		b, err := gox.ParseBool(srcVal.Interface())
+		b, err := types.ParseBool(srcVal.Interface())
 		if err != nil {
 			return newError("", err.Error())
 		}
 		v.SetBool(b)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		i, err := gox.ParseInt(srcVal.Interface())
+		i, err := types.ParseInt(srcVal.Interface())
 		if err != nil {
 			return newError("", err.Error())
 		}
 		v.SetInt(i)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		i, err := gox.ParseInt(srcVal.Interface())
+		i, err := types.ParseInt(srcVal.Interface())
 		if err != nil {
 			return newError("", err.Error())
 		}
 		v.SetUint(uint64(i))
 	case reflect.Float32, reflect.Float64:
-		i, err := gox.ParseFloat(srcVal.Interface())
+		i, err := types.ParseFloat(srcVal.Interface())
 		if err != nil {
 			return newError("", err.Error())
 		}

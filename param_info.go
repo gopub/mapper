@@ -2,7 +2,8 @@ package param
 
 import (
 	"errors"
-	"github.com/natande/gox"
+	"github.com/gopub/types"
+	"github.com/gopub/utils"
 	"reflect"
 	"strings"
 )
@@ -62,7 +63,7 @@ func parseParamInfo(f reflect.StructField, tagName string) (*paramInfo, error) {
 
 	info := &paramInfo{}
 	if len(tag) == 0 {
-		info.name = gox.CamelToSnake(f.Name)
+		info.name = utils.CamelToSnake(f.Name)
 		return info, nil
 	}
 
@@ -125,7 +126,7 @@ func parseParamInfo(f reflect.StructField, tagName string) (*paramInfo, error) {
 	}
 
 	if len(info.name) == 0 {
-		info.name = gox.CamelToSnake(f.Name)
+		info.name = utils.CamelToSnake(f.Name)
 	}
 
 	return info, nil
@@ -134,13 +135,13 @@ func parseParamInfo(f reflect.StructField, tagName string) (*paramInfo, error) {
 func parseValueByType(t reflect.Type, s string) (interface{}, error) {
 	switch t.Kind() {
 	case reflect.Float32, reflect.Float64:
-		return gox.ParseFloat(s)
+		return types.ParseFloat(s)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return gox.ParseInt(s)
+		return types.ParseInt(s)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return gox.ParseInt(s)
+		return types.ParseInt(s)
 	case reflect.String:
-		return gox.ParseInt(s)
+		return types.ParseInt(s)
 	default:
 		return nil, errors.New("min and max properties are not available for field type: " + t.String())
 	}
