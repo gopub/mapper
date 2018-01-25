@@ -245,7 +245,7 @@ func (v *Validator) getModelInfo(modelType reflect.Type) modelInfo {
 	return info
 }
 
-var _defaultValidator = NewValidator("param")
+var _defaultValidator = NewValidator("mapper")
 
 func RegisterPatternMatcher(name string, matcher PatternMatcher) {
 	_defaultValidator.RegisterPatternMatcher(name, matcher)

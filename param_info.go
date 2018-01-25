@@ -77,7 +77,7 @@ func parseParamInfo(f reflect.StructField, tagName string) (*paramInfo, error) {
 
 		if MatchPattern("variable", s) {
 			if len(info.name) > 0 {
-				return nil, errors.New("duplicate param name: " + s)
+				return nil, errors.New("duplicate mapper name: " + s)
 			}
 			info.name = s
 			continue

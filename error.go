@@ -31,5 +31,5 @@ func (e *paramError) Message() string {
 }
 
 func (e *paramError) Error() string {
-	return fmt.Sprintf("param:%s, msg:%s", e.paramName, e.msg)
+	return fmt.Sprintf("mapper:%s, msg:%s", e.paramName, e.msg)
 }

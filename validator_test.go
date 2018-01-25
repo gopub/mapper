@@ -1,46 +1,46 @@
 package mapper_test
 
 import (
-	"github.com/natande/goparam"
+	"github.com/gopub/mapper"
 	"strings"
 	"testing"
 )
 
 type Image struct {
-	Width  int    `param:"w,min=100,max=800"`
-	Height int    `param:"h,min=100,max=800"`
-	Link   string `param:"pattern=url"`
+	Width  int    `mapper:"w,min=100,max=800"`
+	Height int    `mapper:"h,min=100,max=800"`
+	Link   string `mapper:"pattern=url"`
 }
 
 type Topic struct {
-	Title      string   `param:"min=2,max=30"`
-	CoverImage *Image   `param:"optional"`
-	MoreImages []*Image `param:"optional"`
+	Title      string   `mapper:"min=2,max=30"`
+	CoverImage *Image   `mapper:"optional"`
+	MoreImages []*Image `mapper:"optional"`
 }
 
 func TestValidate(t *testing.T) {
 	topic := &Topic{
 		Title: "a",
 	}
-	err := param.Validate(topic)
+	err := mapper.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
 
 	topic.Title = strings.Repeat("a", 31)
-	err = param.Validate(topic)
+	err = mapper.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
 
 	topic.Title = strings.Repeat("a", 30)
-	err = param.Validate(topic)
+	err = mapper.Validate(topic)
 	if err != nil {
 		t.FailNow()
 	}
 
 	topic.Title = strings.Repeat("a", 2)
-	err = param.Validate(topic)
+	err = mapper.Validate(topic)
 	if err != nil {
 		t.FailNow()
 	}
@@ -50,7 +50,7 @@ func TestValidate(t *testing.T) {
 		Height: 0,
 		Link:   "https://www.image.com",
 	}
-	err = param.Validate(topic)
+	err = mapper.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
@@ -60,7 +60,7 @@ func TestValidate(t *testing.T) {
 		Height: 900,
 		Link:   "https://www.image.com",
 	}
-	err = param.Validate(topic)
+	err = mapper.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
@@ -70,7 +70,7 @@ func TestValidate(t *testing.T) {
 		Height: 800,
 		Link:   "https://www.image.com",
 	}
-	err = param.Validate(topic)
+	err = mapper.Validate(topic)
 	if err != nil {
 		t.FailNow()
 	}
@@ -80,7 +80,7 @@ func TestValidate(t *testing.T) {
 		Height: 800,
 		Link:   "https://www.image.com",
 	}}
-	err = param.Validate(topic)
+	err = mapper.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
@@ -90,7 +90,7 @@ func TestValidate(t *testing.T) {
 		Height: 800,
 		Link:   ":",
 	}}
-	err = param.Validate(topic)
+	err = mapper.Validate(topic)
 	if err == nil {
 		t.FailNow()
 	}
@@ -100,7 +100,7 @@ func TestValidate(t *testing.T) {
 		Height: 800,
 		Link:   "https://www.image.com",
 	}}
-	err = param.Validate(topic)
+	err = mapper.Validate(topic)
 	if err != nil {
 		t.FailNow()
 	}

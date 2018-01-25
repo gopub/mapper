@@ -4,15 +4,15 @@ Assign parameters to model and validate values
 
 ```
 type Image struct {
-	Width  int    `param:"w,min=100,max=800"`
-	Height int    `param:"h,min=100,max=800"`
-	Link   string `param:"pattern=url"`
+	Width  int    `mapper:"w,min=100,max=800"`
+	Height int    `mapper:"h,min=100,max=800"`
+	Link   string `mapper:"pattern=url"`
 }
 
 type Topic struct {
-	Title      string   `param:"min=2,max=30"`
-	CoverImage *Image   `param:"optional"`
-	MoreImages []*Image `param:"optional"`
+	Title      string   `mapper:"min=2,max=30"`
+	CoverImage *Image   `mapper:"optional"`
+	MoreImages []*Image `mapper:"optional"`
 }
 ```
     

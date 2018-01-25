@@ -1,7 +1,7 @@
 package mapper_test
 
 import (
-	"github.com/natande/goparam"
+	"github.com/gopub/mapper"
 	"testing"
 )
 
@@ -23,7 +23,7 @@ func TestAssign(t *testing.T) {
 	}
 
 	var topic *Topic
-	err := param.Assign(&topic, params)
+	err := mapper.Assign(&topic, params)
 	if err != nil {
 		t.FailNow()
 	}
@@ -48,7 +48,7 @@ func TestAssignSlice(t *testing.T) {
 
 	values := []interface{}{params}
 	var topics []*Topic
-	err := param.Assign(&topics, values)
+	err := mapper.Assign(&topics, values)
 	if err != nil || len(topics) == 0 {
 		t.FailNow()
 	}
