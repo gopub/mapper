@@ -2,8 +2,8 @@ package mapper
 
 import (
 	"fmt"
+	"github.com/gopub/log"
 	"github.com/gopub/types"
-	"log"
 	"reflect"
 )
 
@@ -47,8 +47,7 @@ func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validato
 	}
 
 	if !dstVal.IsValid() {
-		log.Println(dstVal, srcVal)
-		panic("invalid values")
+		log.Panicf("invalid values:dstVal=%v,srcVal=%v", dstVal, srcVal)
 	}
 
 	v := dstVal
