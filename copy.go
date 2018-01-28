@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"github.com/gopub/log"
 	"reflect"
 	"strings"
 )
@@ -15,15 +16,16 @@ func Copy(ptrDst interface{}, src interface{}, nameMapper func(srcFieldName, dst
 	dv := reflect.ValueOf(ptrDst)
 	sv := reflect.ValueOf(src)
 	if dv.IsValid() == false || sv.IsValid() == false {
-		return
+		log.Panic("invalid input")
 	}
 
 	if dv.Kind() != reflect.Ptr {
-		return
+		log.Panic("ptrDst is not a pointer")
 	}
+
 	dv = dv.Elem()
 	if dv.Kind() != reflect.Struct {
-		return
+		log.Panic("ptrDst is not a pointer to a struct")
 	}
 
 	if sv.Kind() == reflect.Ptr {
@@ -31,7 +33,7 @@ func Copy(ptrDst interface{}, src interface{}, nameMapper func(srcFieldName, dst
 	}
 
 	if sv.Kind() != reflect.Struct {
-		return
+		log.Panic("src is not a struct or a pointer to a struct")
 	}
 
 	if nameMapper == nil {

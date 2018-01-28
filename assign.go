@@ -111,7 +111,7 @@ func assignValue(dstVal reflect.Value, srcVal reflect.Value, validator *Validato
 			return err
 		}
 	default:
-		panic("unknown kind: " + v.Kind().String())
+		log.Panicf("unknown kind=%s", v.Kind().String())
 	}
 
 	if dstVal.Kind() == reflect.Ptr && dstVal.IsNil() {
