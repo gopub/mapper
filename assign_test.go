@@ -53,3 +53,44 @@ func TestAssignSlice(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+type User struct {
+	Id       int
+	Name     string
+	OpenAuth *OpenAuth
+}
+
+type OpenAuth struct {
+	Provider string
+	OpenID   string
+}
+
+type UserInfo struct {
+	Id       int
+	Name     string
+	OpenAuth *OpenAuthInfo
+}
+
+type OpenAuthInfo struct {
+	Provider string
+	OpenID   string
+}
+
+func TestAssignStruct(t *testing.T) {
+	user := &User{}
+	userInfo := &UserInfo{
+		Id:   1,
+		Name: "tom",
+		OpenAuth: &OpenAuthInfo{
+			Provider: "wechat",
+			OpenID:   "open_id_123",
+		},
+	}
+
+	err := mapper.Assign(user, userInfo)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Logf("%#v", user)
+}
