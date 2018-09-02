@@ -57,9 +57,9 @@ func (v *Validator) Validate(model interface{}) Error {
 
 	info := v.getModelInfo(val.Type())
 
-	for i, pi := range info {
-		fmt.Printf("%d min=%v max=%v pattern=%s transformer=%s optional=%v\n", i, pi.minVal, pi.maxVal, pi.patterns, pi.transformName, pi.optional)
-	}
+	//for i, pi := range info {
+	//	fmt.Printf("%d min=%v max=%v pattern=%s transformer=%s optional=%v\n", i, pi.minVal, pi.maxVal, pi.patterns, pi.transformName, pi.optional)
+	//}
 
 	for i := 0; i < val.NumField(); i++ {
 		fv := val.Field(i)
