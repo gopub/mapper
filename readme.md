@@ -1,32 +1,18 @@
-# params
-
-Assign parameters to model and validate values
-
+# Assign map to struct
 ```
 type Image struct {
-	Width  int    `mapper:"w,min=100,max=800"`
-	Height int    `mapper:"h,min=100,max=800"`
-	Link   string `mapper:"pattern=url"`
+	Width  int    
+	Height int    
+	Link   string 
 }
 
 type Topic struct {
-	Title      string   `mapper:"min=2,max=30"`
-	CoverImage *Image   `mapper:"optional"`
-	MoreImages []*Image `mapper:"optional"`
+	Title      string  
+	CoverImage *Image  
+	MoreImages []*Image 
 }
-```
-    
-## Validate
-    topic := &Topic{
-    	Title: "a",
-    }
-    err := params.Validate(topic)
-    //...
-    
-## Assign
-Assign will validate result automatically
 
-    params := map[string]interface{}{
+params := map[string]interface{}{
 		"title": "this is title",
 		"cover_image": map[string]interface{}{
 			"w":    100,
@@ -41,7 +27,47 @@ Assign will validate result automatically
 			},
 		},
 	}
+	
+var topic *Topic
+err := params.Assign(&topic, params)
+//...	
+	
+```
 
-	var topic *Topic
-	err := params.Assign(&topic, params)
-	//...
+# Assign struct to struct
+``` 
+type UserRow struct {
+    ID int64,
+    Name string,
+    CreatedAt int64
+}
+
+type User struct {
+    ID int64,
+    Name string
+}
+
+row, err := getUserRow(userID)
+var user *User
+if err == nil {
+    mapper.Assign(user, row)
+}
+```
+    
+## Validate model
+``` 
+type Image struct {
+	Width  int    `mapper:"min=100,max=800"`
+	Height int    `mapper:"min=100,max=800"`
+	Link   string `mapper:"pattern=url"`
+	Format string `mapper:"optional"`
+}
+
+var img := &Image{
+    ...
+}
+
+err := mapper.Validate(img)
+
+```
+    
