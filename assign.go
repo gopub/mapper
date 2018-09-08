@@ -9,7 +9,7 @@ import (
 )
 
 func Assign(dst interface{}, src interface{}) error {
-	return AssignWithNameMapper(dst, src, _defaultNameMapper)
+	return AssignWithNameMapper(dst, src, defaultNameMapper)
 }
 
 // Assign assigns params to model with DefaultValidator
