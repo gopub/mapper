@@ -86,34 +86,35 @@ func assignValue(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameMapp
 	case reflect.Float32, reflect.Float64:
 		i, err := types.ParseFloat(srcVal.Interface())
 		if err != nil {
-			log.Error(err)
+			log.Debug(err)
 			return err
 		}
 		v.SetFloat(i)
 	case reflect.String:
 		if srcVal.Kind() != reflect.String {
 			err := errors.New("source value is not string")
-			log.Error(err)
+			log.Debug(err)
 			return err
 		}
 		v.SetString(srcVal.String())
 	case reflect.Slice:
 		if srcVal.Kind() != reflect.Slice {
 			err := errors.New("source value is slice")
-			log.Error(err)
+			log.Debug(err)
 			return err
 		}
 		v.Set(reflect.MakeSlice(v.Type(), srcVal.Len(), srcVal.Cap()))
 		for i := 0; i < srcVal.Len(); i++ {
 			err := assignValue(v.Index(i), srcVal.Index(i), nameMapper)
 			if err != nil {
-				log.Error(err)
+				log.Debug(err)
 				return err
 			}
 		}
 	case reflect.Map:
 		err := mapToMap(v, srcVal, nameMapper)
 		if err != nil {
+			log.Debug(err)
 			return err
 		}
 	case reflect.Struct:
@@ -127,7 +128,7 @@ func assignValue(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameMapp
 		}
 
 		if err != nil {
-			log.Errorf("err:%s src:%s dst:%s", err, srcVal.Kind(), v.Kind())
+			log.Debugf("err:%s src:%s dst:%s", err, srcVal.Kind(), v.Kind())
 			return err
 		}
 	default:
@@ -149,14 +150,14 @@ func mapToMap(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameMapper)
 
 	if srcVal.Kind() != reflect.Map {
 		err := errors.New("srcVal is not map")
-		log.Error(err)
+		log.Debug(err)
 		return err
 	}
 
 	if !srcVal.Type().Key().AssignableTo(dstVal.Type().Key()) {
 		msg := fmt.Sprintf("%s can't be assigned to %s", srcVal.Type().Key().String(), dstVal.Type().Key().String())
 		err := errors.New(msg)
-		log.Error(err)
+		log.Debug(err)
 		return err
 	}
 
@@ -174,16 +175,18 @@ func mapToMap(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameMapper)
 			kv := reflect.New(de.Elem())
 			err := assignValue(kv, srcVal.MapIndex(k), nameMapper)
 			if err != nil {
-				return err
+				log.Debug(err)
+			} else {
+				dstVal.SetMapIndex(k, kv)
 			}
-			dstVal.SetMapIndex(k, kv)
 		default:
 			kv := reflect.New(de)
 			err := assignValue(kv, srcVal.MapIndex(k), nameMapper)
 			if err != nil {
-				return err
+				log.Debug(err)
+			} else {
+				dstVal.SetMapIndex(k, kv.Elem())
 			}
-			dstVal.SetMapIndex(k, kv.Elem())
 		}
 	}
 	return nil
@@ -202,13 +205,13 @@ func mapToStruct(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameMapp
 
 	if srcVal.Kind() != reflect.Map {
 		err := errors.New("srcVal is not map")
-		log.Error(err)
+		log.Debug(err)
 		return err
 	}
 
 	if srcVal.Type().Key().Kind() != reflect.String {
 		err := errors.New("key type must be string")
-		log.Error(err)
+		log.Debug(err)
 		return err
 	}
 
@@ -222,7 +225,7 @@ func mapToStruct(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameMapp
 		if ft.Anonymous {
 			err := assignValue(fv, srcVal, nameMapper)
 			if err != nil {
-				return err
+				log.Debug(err)
 			}
 			continue
 		}
@@ -240,8 +243,7 @@ func mapToStruct(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameMapp
 
 			err := assignValue(fv, reflect.ValueOf(fsv.Interface()), nameMapper)
 			if err != nil {
-				log.Error(err, ft.Name)
-				return err
+				log.Debug(err, ft.Name)
 			}
 			break
 		}
@@ -276,7 +278,7 @@ func structToStruct(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameM
 		if ft.Anonymous {
 			err := assignValue(fv, srcVal, nameMapper)
 			if err != nil {
-				return err
+				log.Debug(err)
 			}
 			continue
 		}
@@ -294,8 +296,7 @@ func structToStruct(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameM
 
 			err := assignValue(fv, reflect.ValueOf(sfv.Interface()), nameMapper)
 			if err != nil {
-				log.Error(err, ft.Name)
-				return err
+				log.Debug(err, ft.Name)
 			}
 			break
 		}
