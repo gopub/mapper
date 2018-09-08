@@ -300,5 +300,17 @@ func structToStruct(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameM
 			break
 		}
 	}
+
+	for i := 0; i < srcVal.NumField(); i++ {
+		sfv := srcVal.Field(i)
+		sfName := srcVal.Type().Field(i).Name
+		if sfv.IsValid() == false || sfName[0] < 'A' || sfName[0] > 'Z' {
+			continue
+		}
+
+		if srcVal.Type().Field(i).Anonymous {
+			assignValue(dstVal, reflect.ValueOf(sfv.Interface()), nameMapper)
+		}
+	}
 	return nil
 }
