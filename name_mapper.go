@@ -1,8 +1,9 @@
 package mapper
 
 import (
-	"github.com/gopub/utils"
 	"strings"
+
+	"github.com/gopub/conv"
 )
 
 type NameMapper interface {
@@ -33,13 +34,13 @@ func NameMapperWithMap(srcToDst map[string]string) NameMapper {
 }
 
 var SnakeToCamelNameMapper NameMapFunc = func(snakeSrcName string, camelDstName string) bool {
-	srcName := strings.ToLower(utils.SnakeToCamel(snakeSrcName))
+	srcName := strings.ToLower(conv.ToCamel(snakeSrcName))
 	dstName := strings.ToLower(camelDstName)
 	return srcName == dstName
 }
 
 var CamelToSnakeNameMapper NameMapFunc = func(camelSrcName string, snakeDstName string) bool {
 	srcName := strings.ToLower(camelSrcName)
-	dstName := strings.ToLower(utils.SnakeToCamel(snakeDstName))
+	dstName := strings.ToLower(conv.ToCamel(snakeDstName))
 	return srcName == dstName
 }

@@ -1,8 +1,9 @@
 package mapper_test
 
 import (
-	"github.com/gopub/mapper"
 	"testing"
+
+	"github.com/gopub/mapper"
 )
 
 func TestAssign(t *testing.T) {

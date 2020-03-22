@@ -3,9 +3,10 @@ package mapper
 import (
 	"errors"
 	"fmt"
-	"github.com/gopub/log"
-	"github.com/gopub/types"
 	"reflect"
+
+	"github.com/gopub/conv"
+	"github.com/gopub/log"
 )
 
 func Assign(dst interface{}, src interface{}) error {
@@ -63,59 +64,49 @@ func assignValue(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameMapp
 
 	switch v.Kind() {
 	case reflect.Bool:
-		b, err := types.ParseBool(srcVal.Interface())
+		b, err := conv.ToBool(srcVal.Interface())
 		if err != nil {
-			log.Error(err)
-			return err
+			return fmt.Errorf("parse bool: %w", err)
 		}
 		v.SetBool(b)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		i, err := types.ParseInt(srcVal.Interface())
+		i, err := conv.ToInt64(srcVal.Interface())
 		if err != nil {
-			log.Error(err)
-			return err
+			return fmt.Errorf("parse int64: %w", err)
 		}
 		v.SetInt(i)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		i, err := types.ParseInt(srcVal.Interface())
+		i, err := conv.ToUint64(srcVal.Interface())
 		if err != nil {
-			log.Error(err)
-			return err
+			return fmt.Errorf("parse uint64: %w", err)
 		}
-		v.SetUint(uint64(i))
+		v.SetUint(i)
 	case reflect.Float32, reflect.Float64:
-		i, err := types.ParseFloat(srcVal.Interface())
+		i, err := conv.ToFloat64(srcVal.Interface())
 		if err != nil {
-			log.Debug(err)
-			return err
+			return fmt.Errorf("parse float64: %w", err)
 		}
 		v.SetFloat(i)
 	case reflect.String:
 		if srcVal.Kind() != reflect.String {
-			err := errors.New("source value is not string")
-			log.Debug(err)
-			return err
+			return errors.New("source value is not string")
 		}
 		v.SetString(srcVal.String())
 	case reflect.Slice:
 		if srcVal.Kind() != reflect.Slice {
-			err := errors.New("source value is slice")
-			log.Debug(err)
-			return err
+			return errors.New("source value is slice")
 		}
 		v.Set(reflect.MakeSlice(v.Type(), srcVal.Len(), srcVal.Cap()))
 		for i := 0; i < srcVal.Len(); i++ {
 			err := assignValue(v.Index(i), srcVal.Index(i), nameMapper)
 			if err != nil {
-				log.Debug(err)
-				return err
+				return fmt.Errorf("cannot assign field at index %d: %w", i, err)
 			}
 		}
 	case reflect.Map:
 		err := mapToMap(v, srcVal, nameMapper)
 		if err != nil {
-			log.Debug(err)
-			return err
+			return fmt.Errorf("assign map to map: %w", err)
 		}
 	case reflect.Struct:
 		var err error
@@ -128,8 +119,7 @@ func assignValue(dstVal reflect.Value, srcVal reflect.Value, nameMapper NameMapp
 		}
 
 		if err != nil {
-			log.Debugf("err:%s src:%s dst:%s", err, srcVal.Kind(), v.Kind())
-			return err
+			return fmt.Errorf("cannot assign %T to %T: %w", srcVal.Interface(), v.Interface(), err)
 		}
 	default:
 		log.Panicf("unknown kind=%s", v.Kind().String())

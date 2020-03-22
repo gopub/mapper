@@ -2,10 +2,11 @@ package mapper
 
 import (
 	"errors"
-	"github.com/gopub/types"
-	"github.com/gopub/utils"
+	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/gopub/conv"
 )
 
 type modelInfo = map[int]*paramInfo
@@ -63,7 +64,7 @@ func parseParamInfo(f reflect.StructField, tagName string) (*paramInfo, error) {
 
 	info := &paramInfo{}
 	if len(tag) == 0 {
-		info.name = utils.CamelToSnake(f.Name)
+		info.name = conv.ToSnake(f.Name)
 		return info, nil
 	}
 
@@ -97,13 +98,13 @@ func parseParamInfo(f reflect.StructField, tagName string) (*paramInfo, error) {
 		case "min":
 			minVal, err := parseValueByType(f.Type, val)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("cannot parse value by type: %w", err)
 			}
 			info.minVal = minVal
 		case "max":
 			maxVal, err := parseValueByType(f.Type, val)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("cannot parse value by type: %w", err)
 			}
 			info.maxVal = maxVal
 		case "pattern":
@@ -126,7 +127,7 @@ func parseParamInfo(f reflect.StructField, tagName string) (*paramInfo, error) {
 	}
 
 	if len(info.name) == 0 {
-		info.name = utils.CamelToSnake(f.Name)
+		info.name = conv.ToSnake(f.Name)
 	}
 
 	return info, nil
@@ -135,13 +136,11 @@ func parseParamInfo(f reflect.StructField, tagName string) (*paramInfo, error) {
 func parseValueByType(t reflect.Type, s string) (interface{}, error) {
 	switch t.Kind() {
 	case reflect.Float32, reflect.Float64:
-		return types.ParseFloat(s)
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return types.ParseInt(s)
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return types.ParseInt(s)
+		return conv.ToFloat64(s)
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return conv.ToInt64(s)
 	case reflect.String:
-		return types.ParseInt(s)
+		return conv.ToInt64(s)
 	default:
 		return nil, errors.New("min and max properties are not available for field type: " + t.String())
 	}
